@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Hexoban" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Hexoban" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="../../../../../devel/Allegro5/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_acodec.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_audio.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_color.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_dialog.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_font.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_image.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_main.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_memfile.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_physfs.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_primitives.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\liballegro_ttf.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libfreetype.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libfreetype.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libogg.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libogg.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libphysfs.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libphysfs.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libpng.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libpng.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libpng16.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libpng16.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbis.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbis.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbisenc.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbisenc.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbisfile.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libvorbisfile.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libzlib.dll.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libzlibstatic.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libgdiplus.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libuuid.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libkernel32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libwinmm.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libpsapi.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libopengl32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libglu32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libuser32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libcomdlg32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libgdi32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libshell32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libole32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libadvapi32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libws2_32.a" />
+					<Add library="..\..\..\..\..\MinGW\lib\libshlwapi.a" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Hexoban" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
