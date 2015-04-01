@@ -226,7 +226,9 @@
 
 1427417186 c:\devel\allegro5\include\allegro5\alcompat.h
 
-1427747753 source:c:\users\jachu\documents\github\hexoban\main.c
+1427928248 source:c:\users\jachu\documents\github\hexoban\main.c
 	<stdio.h>
+	<stdlib.h>
+	<time.h>
 	<allegro5/allegro.h>
 
