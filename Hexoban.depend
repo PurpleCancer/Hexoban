@@ -226,9 +226,11 @@
 
 1427417186 c:\devel\allegro5\include\allegro5\alcompat.h
 
-1427928248 source:c:\users\jachu\documents\github\hexoban\main.c
+1428186330 source:c:\users\jachu\documents\github\hexoban\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
+	<string.h>
 	<allegro5/allegro.h>
+	<allegro5/allegro_font.h>
 
