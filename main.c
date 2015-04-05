@@ -245,6 +245,8 @@ int board_load(struct hex board[BoardW][BoardH+1], char name[],int *crates, int 
         }
     }
     fclose(fp);
+
+    return 0;
 }
 
 int move(char key, struct hex board[BoardW][BoardH+1], int *crates_on_targets)
