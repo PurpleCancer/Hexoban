@@ -11,7 +11,7 @@ const int OriginX=100, OriginY=100;             //origin of the board
 const int BoardW=15, BoardH=10;                 //size of board in hexes
 const float FPS=60;
 const double min_time=0.2;                      //minimal number of second between moves
-enum keys {Q, W, E, A, S, D, UP, DOWN, RIGHT, LEFT, PGUP, PGDOWN, ENTER};
+enum keys {Q, W, E, A, S, D, UP, DOWN, RIGHT, LEFT, PGUP, PGDOWN, ENTER, ESC};
 
 //creating structure for the board
 enum tile {wall, floor};
@@ -129,10 +129,25 @@ int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO
     return 0;
 }
 
-int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char lvl_selected[20])
+int draw_menu(ALLEGRO_FONT *font, int position)
+{
+    al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 100, ALLEGRO_ALIGN_CENTRE, "MENU");
+
+    if(position==0)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, "Select level");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, "Select level");
+
+    if(position==1)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Level editor");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Level editor");
+
+    if(position==2)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Exit");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Exit");
+}
+
+int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char lvl_selected[20], int *lvls_in_set)
 {
     FILE *fp;
     int i,j;
+    int lvls_in_current_set;
     const int set_length=20;
     const int max_number_of_lvl_sets=10;
     char *sets_names;
@@ -145,6 +160,8 @@ int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char l
     sets_names=(char*) calloc((*number_of_lvl_sets), set_length*sizeof(char));
     for(i=0; i<(*number_of_lvl_sets); ++i)
     {
+        fscanf(fp, "%d", &lvls_in_current_set);
+        if(i==selected)(*lvls_in_set)=lvls_in_current_set;
         fscanf(fp, "%s", &sets_names[set_length*i]);
     }
 
@@ -194,7 +211,7 @@ int draw_lvl(struct hex board[BoardW][BoardH+1], ALLEGRO_BITMAP *hex)       //dr
     return 0;
 }
 
-int print_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crates, int targets, int crates_on_targets, int moves)
+int print_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crates, int targets, int crates_on_targets, int moves, int levels, int selected)
 //prints the position of the player and victory conditions
 {
     bool lvl_won=false;
@@ -204,6 +221,8 @@ int print_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crat
     char PlayerX[20]="Player X: ", PlayerY[20]="Player Y: ";
     char cr[3], tg[3], ctg[3], mvs[5];
     char Crates[20]="Crates: ", Targets[20]="Targets: ", CratesOn[20]="Crates on targets: ", Moves[20]="Moves: ";
+    char lvl[4] , lvls[4];
+    char Level[20]="Level ";
 
     sprintf(PlX, "%d", PlayerPos.x);
     sprintf(PlY, "%d", PlayerPos.y);
@@ -220,6 +239,13 @@ int print_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crat
     strcat(CratesOn, ctg);
     strcat(Moves, mvs);
 
+    sprintf(lvl, "%d", selected);
+    sprintf(lvls, "%d", levels);
+    strcat(Level, lvl);
+    strcat(Level, " of ");
+    strcat(Level, lvls);
+
+    al_draw_text(font, al_map_rgb(0,0,0), 900, 100, 0, Level);
     al_draw_text(font, al_map_rgb(0,0,0), 900, 400, 0, PlayerX);
     al_draw_text(font, al_map_rgb(0,0,0), 900, 430, 0, PlayerY);
     al_draw_text(font, al_map_rgb(0,0,0), 900, 460, 0, Crates);
@@ -262,8 +288,16 @@ int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, i
     return 0;
 }
 
-int board_load(struct hex board[BoardW][BoardH+1], char name[],int *crates, int *targets, int *crates_on_targets)
+int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_number, int *crates, int *targets, int *crates_on_targets)
 {
+    char name[100]="assets/lvls/";
+    strcat(name, lvl_name);
+    strcat(name, "/");
+    char number[4];
+    sprintf(number, "%d", lvl_number);
+    strcat(name, number);
+    strcat(name, ".txt");
+
     FILE *fp;
     int i,j;
     char s[20];
@@ -515,21 +549,27 @@ int main(int argc, char **argv)
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *hex = NULL;
     ALLEGRO_FONT *font = NULL;
+    //game states
+    bool in_menu=true, in_editor=false, choosing_lvl=false, playing_lvl=false;
     bool redraw = true;
     bool doexit = false;
     PlayerPos.x=-1;                                                 //initial (null) position of the player
     PlayerPos.y=-1;
-    bool key[13] = {false, false, false, false, false, false,
+    bool key[14] = {false, false, false, false, false, false,
                     false, false, false, false, false, false,
-                    false};                                         //keeps track of what keys are pressed
-    double last_move_time=0;                                        //keeps track of when the last move occurred
+                    false, false};                                 //keeps track of what keys are pressed
+    double last_key_time=0;                                        //keeps track of when the last move occurred
     int crates=0, targets=0, crates_on_targets=0;                   //keeps track of completing a level
-    bool choosing_lvl=true;
-    int number_of_current_lvl_selected=0;
-    char current_lvl_set_selected[20];
+
+    //handling level selection
+    int number_of_current_lvl_set_selected=0, number_of_current_lvl_selected, number_of_lvls_in_set;
+    char current_lvl_set_selected_name[20];
     int number_of_lvl_sets=0;
-    bool playing_lvl=false;
     int number_of_moves;
+
+    //handling the menu
+    int menu_position=0;
+    const int number_of_menu_positions=3;
 
 
     struct hex board[BoardW][BoardH+1];
@@ -553,29 +593,77 @@ int main(int argc, char **argv)
 
         if(ev.type == ALLEGRO_EVENT_TIMER)
         {
-            if(choosing_lvl)
+            if(in_menu)
             {
-                if(key[UP] && al_get_time()-last_move_time>min_time && number_of_current_lvl_selected>0){number_of_current_lvl_selected--;last_move_time=al_get_time();}
-                if(key[DOWN] && al_get_time()-last_move_time>min_time && number_of_current_lvl_selected<number_of_lvl_sets-1){number_of_current_lvl_selected++;last_move_time=al_get_time();}
+                if(key[UP] && al_get_time()-last_key_time>min_time && menu_position>0){menu_position--;last_key_time=al_get_time();}
+                if(key[DOWN] && al_get_time()-last_key_time>min_time && menu_position<number_of_menu_positions-1){menu_position++;last_key_time=al_get_time();}
 
-                if(key[ENTER])
+                if(key[ENTER] && al_get_time()-last_key_time>min_time)
                 {
+                    last_key_time=al_get_time();
+                    if(menu_position==0){in_menu=false; choosing_lvl=true;}
+                    else if(menu_position==1){in_menu=false; in_editor=true;}
+                    else if(menu_position==2)doexit=true;
+                }
+                if(key[ESC] && al_get_time()-last_key_time>min_time)doexit=true;
+            }
+            else if(in_editor)
+            {
+                //add a nice lvl editor
+
+                if(key[ESC] && al_get_time()-last_key_time>min_time)
+                {
+                    last_key_time=al_get_time();
+                    in_menu=true;
+                    in_editor=false;
+                }
+            }
+            else if(choosing_lvl)
+            {
+                if(key[UP] && al_get_time()-last_key_time>min_time && number_of_current_lvl_set_selected>0){number_of_current_lvl_set_selected--;last_key_time=al_get_time();}
+                if(key[DOWN] && al_get_time()-last_key_time>min_time && number_of_current_lvl_set_selected<number_of_lvl_sets-1){number_of_current_lvl_set_selected++;last_key_time=al_get_time();}
+
+                if(key[ENTER] && al_get_time()-last_key_time>min_time)
+                {
+                    last_key_time=al_get_time();
+
                     choosing_lvl=false;
                     playing_lvl=true;
-                    char name[100]="assets/lvls/";
-                    strcat(name, current_lvl_set_selected);
-                    strcat(name, "/0.txt");
+                    number_of_current_lvl_selected=0;
 
-                    board_load(board, name, &crates, &targets, &crates_on_targets);
+                    board_load(board, current_lvl_set_selected_name, number_of_current_lvl_selected, &crates, &targets, &crates_on_targets);
+                }
+
+                if(key[ESC] && al_get_time()-last_key_time>min_time)
+                {
+                    last_key_time=al_get_time();
+                    in_menu=true;
+                    choosing_lvl=false;
                 }
             }
             else if(playing_lvl){
-                if(key[Q] && al_get_time()-last_move_time>min_time)if(move('q', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
-                if(key[W] && al_get_time()-last_move_time>min_time)if(move('w', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
-                if(key[E] && al_get_time()-last_move_time>min_time)if(move('e', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
-                if(key[A] && al_get_time()-last_move_time>min_time)if(move('a', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
-                if(key[S] && al_get_time()-last_move_time>min_time)if(move('s', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
-                if(key[D] && al_get_time()-last_move_time>min_time)if(move('d', board, &crates_on_targets, &number_of_moves)==1)last_move_time=al_get_time();
+                if(key[Q] && al_get_time()-last_key_time>min_time)if(move('q', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+                if(key[W] && al_get_time()-last_key_time>min_time)if(move('w', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+                if(key[E] && al_get_time()-last_key_time>min_time)if(move('e', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+                if(key[A] && al_get_time()-last_key_time>min_time)if(move('a', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+                if(key[S] && al_get_time()-last_key_time>min_time)if(move('s', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+                if(key[D] && al_get_time()-last_key_time>min_time)if(move('d', board, &crates_on_targets, &number_of_moves)==1)last_key_time=al_get_time();
+
+                if(key[PGUP] && al_get_time()-last_key_time>min_time && number_of_current_lvl_selected>0){number_of_current_lvl_selected--;last_key_time=al_get_time();
+                                                    board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves);
+                                                    board_load(board, current_lvl_set_selected_name, number_of_current_lvl_selected, &crates, &targets, &crates_on_targets);}
+                if(key[PGDOWN] && al_get_time()-last_key_time>min_time && number_of_current_lvl_selected<number_of_lvls_in_set-1){number_of_current_lvl_selected++;last_key_time=al_get_time();
+                                                    board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves);
+                                                    board_load(board, current_lvl_set_selected_name, number_of_current_lvl_selected, &crates, &targets, &crates_on_targets);}
+
+                if(key[ESC] && al_get_time()-last_key_time>min_time)
+                {
+                    last_key_time=al_get_time();
+                    choosing_lvl=true;
+                    playing_lvl=false;
+
+                    board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves);
+                }
             }
 
             redraw=true;
@@ -641,12 +729,7 @@ int main(int argc, char **argv)
                 break;
 
             case ALLEGRO_KEY_ESCAPE:
-                if(choosing_lvl)doexit=true;
-                else if(playing_lvl){
-                    choosing_lvl=true;
-                    playing_lvl=false;
-                    board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves);
-                }
+                key[ESC]=true;
                 break;
             }
         }
@@ -706,6 +789,9 @@ int main(int argc, char **argv)
                 key[ENTER]=false;
                 break;
 
+            case ALLEGRO_KEY_ESCAPE:
+                key[ESC]=false;
+                break;
             }
         }
 
@@ -714,16 +800,26 @@ int main(int argc, char **argv)
             redraw=false;
             al_clear_to_color(al_map_rgb(255,255,255));
 
-            if(choosing_lvl)
+            if(in_menu)
             {
-                lvl_select(font, number_of_current_lvl_selected, &number_of_lvl_sets, current_lvl_set_selected);
+                draw_menu(font, menu_position);
+            }
+
+            else if(in_editor)
+            {
+                //add a nice lvl editor
+            }
+
+            else if(choosing_lvl)
+            {
+                lvl_select(font, number_of_current_lvl_set_selected, &number_of_lvl_sets, current_lvl_set_selected_name, &number_of_lvls_in_set);
                 //fprintf(stderr, "%s\n", current_lvl_selected);
             }
 
             else if(playing_lvl)
             {
                 draw_lvl(board,hex);
-                print_stuff(board, font, crates, targets, crates_on_targets, number_of_moves);
+                print_stuff(board, font, crates, targets, crates_on_targets, number_of_moves, number_of_lvls_in_set, number_of_current_lvl_selected+1);
             }
 
             //fprintf(stderr, "%d %d %d %d %d %d %d %d %d %d %d %d %d\n", key[0], key[1], key[2], key[3], key[4], key[5], key[6], key[7], key[8], key[9], key[10], key[11], key[12]);           //EPIC MATRIX
