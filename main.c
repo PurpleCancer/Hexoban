@@ -10,7 +10,7 @@ const int HexW=60, HexH=52;                     //dimensions of a single hex
 const int OriginX=100, OriginY=100;             //origin of the board
 const int BoardW=15, BoardH=10;                 //size of board in hexes
 const float FPS=60;
-const double min_time=0.2;                      //minimal number of second between moves
+const double min_time=0.15;                     //minimal number of second between moves
 enum keys {Q, W, E, A, S, D, UP, DOWN, RIGHT, LEFT, PGUP, PGDOWN, ENTER, ESC, MINUS, O, P, X, C, T, R};
 
 //creating structure for the board
@@ -18,6 +18,7 @@ enum tile {wall, floor};
 struct hex
 {
     enum tile tl;
+    int var;
     bool PLAYER;
     bool CRATE;
     bool TARGET;
@@ -29,7 +30,7 @@ struct pos
     int y;
 }PlayerPos, CursorPos;
 
-int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex, ALLEGRO_FONT **font)
+int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex)
 {
     bool no_error;
 
@@ -81,23 +82,12 @@ int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_T
         return -1;
     }
 
-    *hex = al_load_bitmap("assets/gfx/hex.png");
+    *hex = al_load_bitmap("assets/gfx/newhex.png");
     if(!(*hex)) {
         fprintf(stderr, "failed to load hex bitmap!\n");
         al_destroy_display(*display);
         al_destroy_timer(*timer);
         al_destroy_event_queue(*event_queue);
-        al_rest(1.0);
-        return -1;
-    }
-
-    *font = al_load_ttf_font("assets/fonts/arial.ttf", 20, 0);
-    if(!(*font)) {
-        fprintf(stderr, "failed to load the font!\n");
-        al_destroy_display(*display);
-        al_destroy_timer(*timer);
-        al_destroy_event_queue(*event_queue);
-        al_destroy_bitmap(*hex);
         al_rest(1.0);
         return -1;
     }
@@ -118,21 +108,47 @@ int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_T
     return 0;
 }
 
-int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex, ALLEGRO_FONT **font)
+int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex)
 {
     al_destroy_timer(*timer);
     al_destroy_display(*display);
     al_destroy_event_queue(*event_queue);
     al_destroy_bitmap(*hex);
-    al_destroy_font(*font);
 
     return 0;
 }
 
-int draw_menu(ALLEGRO_FONT *font, int position)
+int font_init(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font)
 {
-    al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 100, ALLEGRO_ALIGN_CENTRE, "HEXOBAN");
-    al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 120, 0, "an ugly game");
+    *font = al_load_ttf_font("assets/fonts/arial.ttf", 20, 0);
+    if(!(*font)) {
+        fprintf(stderr, "failed to load the font!\n");
+        al_rest(1.0);
+        return -1;
+    }
+
+    *big_font = al_load_ttf_font("assets/fonts/arial.ttf", 50, 0);
+    if(!(*font)) {
+        fprintf(stderr, "failed to load the font!\n");
+        al_rest(1.0);
+        return -1;
+    }
+
+    return 0;
+}
+
+int font_deinit(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font)
+{
+    al_destroy_font(*font);
+    al_destroy_font(*big_font);
+
+    return 0;
+}
+
+int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position)
+{
+    al_draw_text(big_font, al_map_rgb(0,0,0), ScreenW/2, 80, ALLEGRO_ALIGN_CENTRE, "HEXOBAN");
+    al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2+30, 120, 0, "an ugly game");
 
     if(position==0)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, "Select level");
     else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, "Select level");
@@ -358,12 +374,13 @@ int draw_lvl(struct hex board[BoardW][BoardH+1], ALLEGRO_BITMAP *hex, bool edito
         {
             if(i<BoardH||j%2==1)
             {
-                if(!board[j][i].tl)al_draw_bitmap_region(hex, 0, 0, HexW, HexH, X, YY, 0);
+                if(!board[j][i].tl)al_draw_bitmap_region(hex, board[j][i].var*HexW, 0, HexW, HexH, X, YY, 0);
                 else
                 {
-                    al_draw_bitmap_region(hex, 0, HexH, HexW, HexH, X, YY, 0);
+                    al_draw_bitmap_region(hex, board[j][i].var*HexW, HexH, HexW, HexH, X, YY, 0);
                     if(board[j][i].TARGET)al_draw_bitmap_region(hex, 0, 4*HexH, HexW, HexH, X, YY, 0);
-                    if(board[j][i].CRATE)al_draw_bitmap_region(hex, 0, 3*HexH, HexW, HexH, X, YY, 0);
+                    if(board[j][i].CRATE && !board[j][i].TARGET)al_draw_bitmap_region(hex, 0, 3*HexH, HexW, HexH, X, YY, 0);
+                    if(board[j][i].CRATE && board[j][i].TARGET)al_draw_bitmap_region(hex, HexW, 3*HexH, HexW, HexH, X, YY, 0);
                     if(board[j][i].PLAYER)al_draw_bitmap_region(hex, 0, 2*HexH, HexW, HexH, X, YY, 0);
                 }
                 if(editor && j==CursorPos.x && i==CursorPos.y)al_draw_bitmap_region(hex, 0, 5*HexH, HexW, HexH, X, YY, 0);
@@ -440,6 +457,7 @@ int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, i
         for(j=0;j<BoardW;++j)
         {
             board[j][i].tl=0;
+            board[j][i].var=rand()%4;
             board[j][i].PLAYER=false;
             board[j][i].CRATE=false;
             board[j][i].TARGET=false;
@@ -448,6 +466,7 @@ int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, i
     for(j=1;j<BoardW;j+=2)
     {
         board[j][BoardH].tl=0;
+        board[j][i].var=rand()%4;
         board[j][i].PLAYER=false;
         board[j][i].CRATE=false;
         board[j][i].TARGET=false;
@@ -493,6 +512,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                 {
                 case '-':
                     board[j][i].tl=0;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=false;
                     board[j][i].CRATE=false;
                     board[j][i].TARGET=false;
@@ -501,6 +521,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                 case 'O':
                 case '0':
                     board[j][i].tl=1;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=false;
                     board[j][i].CRATE=false;
                     board[j][i].TARGET=false;
@@ -511,6 +532,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                     PlayerPos.x=j;
                     PlayerPos.y=i;
                     board[j][i].tl=1;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=true;
                     board[j][i].CRATE=false;
                     board[j][i].TARGET=false;
@@ -519,6 +541,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                 case 'C':
                     (*crates)++;
                     board[j][i].tl=1;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=false;
                     board[j][i].CRATE=true;
                     board[j][i].TARGET=false;
@@ -527,6 +550,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                 case 'X':
                     (*targets)++;
                     board[j][i].tl=1;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=false;
                     board[j][i].CRATE=false;
                     board[j][i].TARGET=true;
@@ -537,6 +561,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                     (*crates)++;
                     (*crates_on_targets)++;
                     board[j][i].tl=1;
+                    board[j][i].var=rand()%4;
                     board[j][i].PLAYER=false;
                     board[j][i].CRATE=true;
                     board[j][i].TARGET=true;
@@ -781,6 +806,7 @@ int main(int argc, char **argv)
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *hex = NULL;
     ALLEGRO_FONT *font = NULL;
+    ALLEGRO_FONT *big_font = NULL;
     //game states
     bool in_menu=true, in_editor=false, choosing_lvl=false, playing_lvl=false;
     bool valid_lvl=true;
@@ -812,7 +838,8 @@ int main(int argc, char **argv)
     struct hex board[BoardW][BoardH+1];
 
 
-    if(init(&display, &event_queue, &timer, &hex, &font)==-1)return -1;
+    if(init(&display, &event_queue, &timer, &hex)==-1)return -1;
+    if(font_init(&font, &big_font)==-1)return -1;
 
     board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won);
 
@@ -858,14 +885,14 @@ int main(int argc, char **argv)
                 if(key[A] && al_get_time()-last_key_time>min_time)if(editor_function('a', board)==1)last_key_time=al_get_time();
                 if(key[S] && al_get_time()-last_key_time>min_time)if(editor_function('s', board)==1)last_key_time=al_get_time();
                 if(key[D] && al_get_time()-last_key_time>min_time)if(editor_function('d', board)==1)last_key_time=al_get_time();
-                if(key[MINUS] && al_get_time()-last_key_time>min_time)if(editor_function('-', board)==1)last_key_time=al_get_time();
-                if(key[O] && al_get_time()-last_key_time>min_time)if(editor_function('o', board)==1)last_key_time=al_get_time();
-                if(key[P] && al_get_time()-last_key_time>min_time)if(editor_function('p', board)==1)last_key_time=al_get_time();
-                if(key[X] && al_get_time()-last_key_time>min_time)if(editor_function('x', board)==1)last_key_time=al_get_time();
-                if(key[C] && al_get_time()-last_key_time>min_time)if(editor_function('c', board)==1)last_key_time=al_get_time();
-                if(key[T] && al_get_time()-last_key_time>min_time)if(editor_function('t', board)==1)last_key_time=al_get_time();
+                if(key[MINUS])editor_function('-', board);
+                if(key[O])editor_function('o', board);
+                if(key[P])editor_function('p', board);
+                if(key[X])editor_function('x', board);
+                if(key[C])editor_function('c', board);
+                if(key[T])editor_function('t', board);
 
-                if(key[R] && al_get_time()-last_key_time>min_time){board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won);last_key_time=al_get_time();}
+                if(key[R]){board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won);last_key_time=al_get_time();}
 
                 if(key[PGUP] && al_get_time()-last_key_time>min_time && number_of_current_lvl_selected>0){board_unload(board, "custom", number_of_current_lvl_selected);
                                                     number_of_current_lvl_selected--;last_key_time=al_get_time();
@@ -1138,7 +1165,7 @@ int main(int argc, char **argv)
             al_clear_to_color(al_map_rgb(255,255,255));
             if(in_menu)
             {
-                draw_menu(font, menu_position);
+                draw_menu(font, big_font, menu_position);
             }
 
             else if(in_editor)
@@ -1166,7 +1193,8 @@ int main(int argc, char **argv)
         }
     }
 
-    deinit(&display, &event_queue, &timer, &hex, &font);
+    deinit(&display, &event_queue, &timer, &hex);
+    font_deinit(&font, &big_font);
 
     return 0;
 }
