@@ -4,7 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include "init.h"
+#include "main.h"
 #include "game.h"
 
 int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position)
@@ -18,8 +18,147 @@ int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position)
     if(position==1)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Level editor");
     else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Level editor");
 
-    if(position==2)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Exit");
-    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Exit");
+    if(position==2)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Options");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Options");
+
+    if(position==3)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Exit");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Exit");
+}
+
+int options_function(int moveh, ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex, int position)
+{
+    FILE *fgfx;
+    FILE *ffont;
+    int i;
+    const int length=20;
+
+    char *fonts_names;
+    char *gfx_names;
+
+    char font_dir[35]="";
+    char gfx_dir[35]="";
+
+    int fonts_n, fonts_current;
+    int gfx_n, gfx_current;
+
+    char font_to_display[50]="";
+    char gfx_to_display[50]="";
+
+    ffont=fopen("assets/fonts/config.txt","r");
+    fgfx=fopen("assets/gfx/config.txt","r");
+
+    fscanf(ffont, "%d %d", &fonts_n, &fonts_current);
+    fonts_names=(char*) calloc(fonts_n, length*sizeof(char));
+    for(i=0; i<fonts_n; ++i)
+    {
+        fscanf(ffont, "%s", &fonts_names[length*i]);
+    }
+    fscanf(fgfx, "%d %d", &gfx_n, &gfx_current);
+    gfx_names=(char*) calloc(gfx_n, length*sizeof(char));
+    for(i=0; i<gfx_n; ++i)
+    {
+        fscanf(fgfx, "%s", &gfx_names[length*i]);
+    }
+
+
+    //displaying
+    al_draw_text(*font, al_map_rgb(0,0,0), ScreenW/2, 80, ALLEGRO_ALIGN_CENTRE, "Options:");
+
+    if(position==0)
+    {
+        int new_fonts_current=fonts_current+moveh;
+        if(new_fonts_current<0)new_fonts_current=0;
+        if(new_fonts_current>=fonts_n)new_fonts_current=fonts_n-1;
+        if(new_fonts_current!=fonts_current)
+        {
+            fonts_current=new_fonts_current;
+            fclose(ffont);
+            ffont=fopen("assets/fonts/config.txt", "w+");
+
+            fprintf(ffont, "%d %d\n", fonts_n, fonts_current);
+            for(i=0; i<fonts_n; ++i)
+            {
+                fprintf(ffont, "%s\n", &fonts_names[length*i]);
+            }
+
+            strcpy(font_dir, &fonts_names[length*fonts_current]);
+
+            font_deinit(font, big_font);
+            font_init(font, big_font, font_dir);
+        }
+
+        al_draw_text(*font, al_map_rgb(0,0,0), ScreenW/2, 150, ALLEGRO_ALIGN_CENTRE, "Choose font:");
+
+        if(fonts_current!=0)strcat(font_to_display, "< ");
+        strcat(font_to_display, &fonts_names[length*fonts_current]);
+        if(fonts_current!=fonts_n-1)strcat(font_to_display, " >");
+
+        al_draw_text(*font, al_map_rgb(0,0,0), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, font_to_display);
+
+    }
+    else
+    {
+        al_draw_text(*font, al_map_rgb(150,150,150), ScreenW/2, 150, ALLEGRO_ALIGN_CENTRE, "Choose font:");
+
+        if(fonts_current!=0)strcat(font_to_display, "< ");
+        strcat(font_to_display, &fonts_names[length*fonts_current]);
+        if(fonts_current!=fonts_n-1)strcat(font_to_display, " >");
+
+        al_draw_text(*font, al_map_rgb(150,150,150), ScreenW/2, 200, ALLEGRO_ALIGN_CENTRE, font_to_display);
+    }
+
+
+    if(position==1)
+    {
+        int new_gfx_current=gfx_current+moveh;
+        if(new_gfx_current<0)new_gfx_current=0;
+        if(new_gfx_current>=gfx_n)new_gfx_current=gfx_n-1;
+        if(new_gfx_current!=gfx_current)
+        {
+            gfx_current=new_gfx_current;
+            fclose(fgfx);
+            fgfx=fopen("assets/gfx/config.txt", "w+");
+
+            fprintf(fgfx, "%d %d\n", gfx_n, gfx_current);
+            for(i=0; i<gfx_n; ++i)
+            {
+                fprintf(fgfx, "%s\n", &gfx_names[length*i]);
+            }
+
+            strcpy(gfx_dir, &gfx_names[length*gfx_current]);
+
+            bitmap_deinit(hex);
+            bitmap_init(hex, gfx_dir);
+        }
+
+        al_draw_text(*font, al_map_rgb(0,0,0), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Choose graphics pack:");
+
+        if(gfx_current!=0)strcat(gfx_to_display, "< ");
+        strcat(gfx_to_display, &gfx_names[length*gfx_current]);
+        if(gfx_current!=gfx_n-1)strcat(gfx_to_display, " >");
+
+        al_draw_text(*font, al_map_rgb(0,0,0), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, gfx_to_display);
+
+    }
+    else
+    {
+        al_draw_text(*font, al_map_rgb(150,150,150), ScreenW/2, 250, ALLEGRO_ALIGN_CENTRE, "Choose graphics pack:");
+
+        if(gfx_current!=0)strcat(gfx_to_display, "< ");
+        strcat(gfx_to_display, &gfx_names[length*gfx_current]);
+        if(gfx_current!=gfx_n-1)strcat(gfx_to_display, " >");
+
+        al_draw_text(*font, al_map_rgb(150,150,150), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, gfx_to_display);
+    }
+
+
+    free(fonts_names);
+    free(gfx_names);
+
+    fclose(ffont);
+    fclose(fgfx);
+
+    return 0;
 }
 
 int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char lvl_selected[20])
@@ -93,130 +232,130 @@ int write_number_of_lvls(int *lvls_in_set, char name[])
     return 0;
 }
 
-int editor_function(char key, struct hex board[BoardW][BoardH+1], struct pos CursorPos)
+int editor_function(char key, struct hex board[BoardW][BoardH+1], struct pos *CursorPos)
 {
     struct pos EndPos;
 
     if(key=='q')
     {
-        if(CursorPos.x%2)
+        if(CursorPos->x%2)
         {
-            EndPos.x=CursorPos.x-1;
-            EndPos.y=CursorPos.y-1;
+            EndPos.x=CursorPos->x-1;
+            EndPos.y=CursorPos->y-1;
         }
         else
         {
-            EndPos.x=CursorPos.x-1;
-            EndPos.y=CursorPos.y;
+            EndPos.x=CursorPos->x-1;
+            EndPos.y=CursorPos->y;
         }
     }
     else if(key=='w')
     {
-        EndPos.x=CursorPos.x;
-        EndPos.y=CursorPos.y-1;
+        EndPos.x=CursorPos->x;
+        EndPos.y=CursorPos->y-1;
     }
     else if(key=='e')
     {
-        if(CursorPos.x%2)
+        if(CursorPos->x%2)
         {
-            EndPos.x=CursorPos.x+1;
-            EndPos.y=CursorPos.y-1;
+            EndPos.x=CursorPos->x+1;
+            EndPos.y=CursorPos->y-1;
         }
         else
         {
-            EndPos.x=CursorPos.x+1;
-            EndPos.y=CursorPos.y;
+            EndPos.x=CursorPos->x+1;
+            EndPos.y=CursorPos->y;
         }
     }
     else if(key=='a')
     {
-        if(CursorPos.x%2)
+        if(CursorPos->x%2)
         {
-            EndPos.x=CursorPos.x-1;
-            EndPos.y=CursorPos.y;
+            EndPos.x=CursorPos->x-1;
+            EndPos.y=CursorPos->y;
         }
         else
         {
-            EndPos.x=CursorPos.x-1;
-            EndPos.y=CursorPos.y+1;
+            EndPos.x=CursorPos->x-1;
+            EndPos.y=CursorPos->y+1;
         }
     }
     else if(key=='s')
     {
-        EndPos.x=CursorPos.x;
-        EndPos.y=CursorPos.y+1;
+        EndPos.x=CursorPos->x;
+        EndPos.y=CursorPos->y+1;
     }
     else if(key=='d')
     {
-        if(CursorPos.x%2)
+        if(CursorPos->x%2)
         {
-            EndPos.x=CursorPos.x+1;
-            EndPos.y=CursorPos.y;
+            EndPos.x=CursorPos->x+1;
+            EndPos.y=CursorPos->y;
         }
         else
         {
-            EndPos.x=CursorPos.x+1;
-            EndPos.y=CursorPos.y+1;
+            EndPos.x=CursorPos->x+1;
+            EndPos.y=CursorPos->y+1;
         }
     }
     else if(key=='-')
     {
-        board[CursorPos.x][CursorPos.y].tl=0;
-        board[CursorPos.x][CursorPos.y].PLAYER=false;
-        board[CursorPos.x][CursorPos.y].CRATE=false;
-        board[CursorPos.x][CursorPos.y].TARGET=false;
+        board[CursorPos->x][CursorPos->y].tl=0;
+        board[CursorPos->x][CursorPos->y].PLAYER=false;
+        board[CursorPos->x][CursorPos->y].CRATE=false;
+        board[CursorPos->x][CursorPos->y].TARGET=false;
 
         return 1;
     }
     else if(key=='o')
     {
-        board[CursorPos.x][CursorPos.y].tl=1;
-        board[CursorPos.x][CursorPos.y].PLAYER=false;
-        board[CursorPos.x][CursorPos.y].CRATE=false;
-        board[CursorPos.x][CursorPos.y].TARGET=false;
+        board[CursorPos->x][CursorPos->y].tl=1;
+        board[CursorPos->x][CursorPos->y].PLAYER=false;
+        board[CursorPos->x][CursorPos->y].CRATE=false;
+        board[CursorPos->x][CursorPos->y].TARGET=false;
 
         return 1;
     }
     else if(key=='p')
     {
-        board[CursorPos.x][CursorPos.y].tl=1;
-        board[CursorPos.x][CursorPos.y].PLAYER=true;
-        board[CursorPos.x][CursorPos.y].CRATE=false;
-        board[CursorPos.x][CursorPos.y].TARGET=false;
+        board[CursorPos->x][CursorPos->y].tl=1;
+        board[CursorPos->x][CursorPos->y].PLAYER=true;
+        board[CursorPos->x][CursorPos->y].CRATE=false;
+        board[CursorPos->x][CursorPos->y].TARGET=false;
 
         return 1;
     }
     else if(key=='x')
     {
-        board[CursorPos.x][CursorPos.y].tl=1;
-        board[CursorPos.x][CursorPos.y].PLAYER=false;
-        board[CursorPos.x][CursorPos.y].CRATE=false;
-        board[CursorPos.x][CursorPos.y].TARGET=true;
+        board[CursorPos->x][CursorPos->y].tl=1;
+        board[CursorPos->x][CursorPos->y].PLAYER=false;
+        board[CursorPos->x][CursorPos->y].CRATE=false;
+        board[CursorPos->x][CursorPos->y].TARGET=true;
 
         return 1;
     }
     else if(key=='c')
     {
-        board[CursorPos.x][CursorPos.y].tl=1;
-        board[CursorPos.x][CursorPos.y].PLAYER=false;
-        board[CursorPos.x][CursorPos.y].CRATE=true;
-        board[CursorPos.x][CursorPos.y].TARGET=false;
+        board[CursorPos->x][CursorPos->y].tl=1;
+        board[CursorPos->x][CursorPos->y].PLAYER=false;
+        board[CursorPos->x][CursorPos->y].CRATE=true;
+        board[CursorPos->x][CursorPos->y].TARGET=false;
 
         return 1;
     }
     else if(key=='t')
     {
-        board[CursorPos.x][CursorPos.y].tl=1;
-        board[CursorPos.x][CursorPos.y].PLAYER=false;
-        board[CursorPos.x][CursorPos.y].CRATE=true;
-        board[CursorPos.x][CursorPos.y].TARGET=true;
+        board[CursorPos->x][CursorPos->y].tl=1;
+        board[CursorPos->x][CursorPos->y].PLAYER=false;
+        board[CursorPos->x][CursorPos->y].CRATE=true;
+        board[CursorPos->x][CursorPos->y].TARGET=true;
 
         return 1;
     }
 
     if(EndPos.x>-1 && EndPos.y>-1 && EndPos.x<BoardW && ((EndPos.x%2==0 && EndPos.y<BoardH) || (EndPos.x%2==1 && EndPos.y<=BoardH)))
        {
-            CursorPos=EndPos;
+            (*CursorPos)=EndPos;
 
             return 1;
        }
@@ -293,7 +432,7 @@ int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crat
     return 0;
 }
 
-int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, int *crates_on_targets, int *number_of_moves, bool *lvl_won, struct pos PlayerPos)
+int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, int *crates_on_targets, int *number_of_moves, bool *lvl_won, struct pos *PlayerPos)
 {
     int i,j;
     /*for(i=0;i<BoardH;++i)
@@ -334,8 +473,8 @@ int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, i
         board[j][i].TARGET=false;
     }
 
-    PlayerPos.x=-1;
-    PlayerPos.y=-1;
+    PlayerPos->x=-1;
+    PlayerPos->y=-1;
     *crates=0;
     *targets=0;
     *crates_on_targets=0;
@@ -345,7 +484,7 @@ int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, i
     return 0;
 }
 
-int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_number, int *crates, int *targets, int *crates_on_targets, int *moves, bool *valid, bool editor, bool *lvl_won, struct pos PlayerPos)
+int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_number, int *crates, int *targets, int *crates_on_targets, int *moves, bool *valid, bool editor, bool *lvl_won, struct pos *PlayerPos)
 {
     *valid=true;
 
@@ -390,9 +529,9 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
                     break;
                 case 'p':
                 case 'P':
-                    if(PlayerPos.x!=-1){(*valid=false);if(!editor)fprintf(stderr,"player placed two times!\n");}
-                    PlayerPos.x=j;
-                    PlayerPos.y=i;
+                    if(PlayerPos->x!=-1){(*valid=false);if(!editor)fprintf(stderr,"player placed two times!\n");}
+                    PlayerPos->x=j;
+                    PlayerPos->y=i;
                     board[j][i].tl=1;
                     board[j][i].var=rand()%4;
                     board[j][i].PLAYER=true;
@@ -440,7 +579,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
         if(!editor)fprintf(stderr, "wrong crates/targets ratio!\n");
         *valid=false;
     }
-    if(PlayerPos.x==-1)
+    if(PlayerPos->x==-1)
     {
         if(!editor)fprintf(stderr, "no player placed!\n");
         *valid=false;
@@ -491,81 +630,81 @@ int board_unload(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_nu
     return 0;
 }
 
-int move(char key, struct hex board[BoardW][BoardH+1], int *crates_on_targets, int *moves, int targets, bool *lvl_won, struct pos PlayerPos)
+int move(char key, struct hex board[BoardW][BoardH+1], int *crates_on_targets, int *moves, int targets, bool *lvl_won, struct pos *PlayerPos)
 {
     struct pos EndPos;
 
     if(key=='q')
     {
-        if(PlayerPos.x%2)
+        if(PlayerPos->x%2)
         {
-            EndPos.x=PlayerPos.x-1;
-            EndPos.y=PlayerPos.y-1;
+            EndPos.x=PlayerPos->x-1;
+            EndPos.y=PlayerPos->y-1;
         }
         else
         {
-            EndPos.x=PlayerPos.x-1;
-            EndPos.y=PlayerPos.y;
+            EndPos.x=PlayerPos->x-1;
+            EndPos.y=PlayerPos->y;
         }
     }
     else if(key=='w')
     {
-        EndPos.x=PlayerPos.x;
-        EndPos.y=PlayerPos.y-1;
+        EndPos.x=PlayerPos->x;
+        EndPos.y=PlayerPos->y-1;
     }
     else if(key=='e')
     {
-        if(PlayerPos.x%2)
+        if(PlayerPos->x%2)
         {
-            EndPos.x=PlayerPos.x+1;
-            EndPos.y=PlayerPos.y-1;
+            EndPos.x=PlayerPos->x+1;
+            EndPos.y=PlayerPos->y-1;
         }
         else
         {
-            EndPos.x=PlayerPos.x+1;
-            EndPos.y=PlayerPos.y;
+            EndPos.x=PlayerPos->x+1;
+            EndPos.y=PlayerPos->y;
         }
     }
     else if(key=='a')
     {
-        if(PlayerPos.x%2)
+        if(PlayerPos->x%2)
         {
-            EndPos.x=PlayerPos.x-1;
-            EndPos.y=PlayerPos.y;
+            EndPos.x=PlayerPos->x-1;
+            EndPos.y=PlayerPos->y;
         }
         else
         {
-            EndPos.x=PlayerPos.x-1;
-            EndPos.y=PlayerPos.y+1;
+            EndPos.x=PlayerPos->x-1;
+            EndPos.y=PlayerPos->y+1;
         }
     }
     else if(key=='s')
     {
-        EndPos.x=PlayerPos.x;
-        EndPos.y=PlayerPos.y+1;
+        EndPos.x=PlayerPos->x;
+        EndPos.y=PlayerPos->y+1;
     }
     else if(key=='d')
     {
-        if(PlayerPos.x%2)
+        if(PlayerPos->x%2)
         {
-            EndPos.x=PlayerPos.x+1;
-            EndPos.y=PlayerPos.y;
+            EndPos.x=PlayerPos->x+1;
+            EndPos.y=PlayerPos->y;
         }
         else
         {
-            EndPos.x=PlayerPos.x+1;
-            EndPos.y=PlayerPos.y+1;
+            EndPos.x=PlayerPos->x+1;
+            EndPos.y=PlayerPos->y+1;
         }
     }
 
     if(EndPos.x>-1 && EndPos.y>-1 && EndPos.x<BoardW && ((EndPos.x%2==0 && EndPos.y<BoardH) || (EndPos.x%2==1 && EndPos.y<=BoardH)) &&
         board[EndPos.x][EndPos.y].tl && !board[EndPos.x][EndPos.y].CRATE)
        {
-            board[PlayerPos.x][PlayerPos.y].PLAYER=false;
+            board[PlayerPos->x][PlayerPos->y].PLAYER=false;
             board[EndPos.x][EndPos.y].PLAYER=true;
-            PlayerPos=EndPos;
+            (*PlayerPos)=EndPos;
 
-            moves++;
+            (*moves)++;
             return 1;
        }
 
@@ -646,9 +785,9 @@ int move(char key, struct hex board[BoardW][BoardH+1], int *crates_on_targets, i
                 board[EndPos.x][EndPos.y].CRATE=false;                  //crate movement
                 board[CratePos.x][CratePos.y].CRATE=true;
 
-                board[PlayerPos.x][PlayerPos.y].PLAYER=false;           //player movement
+                board[PlayerPos->x][PlayerPos->y].PLAYER=false;           //player movement
                 board[EndPos.x][EndPos.y].PLAYER=true;
-                PlayerPos=EndPos;
+                (*PlayerPos)=EndPos;
 
                 if(*crates_on_targets>=targets)*lvl_won=true;
 

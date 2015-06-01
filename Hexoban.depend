@@ -226,23 +226,25 @@
 
 1372628331 c:\devel\allegro5\include\allegro5\alcompat.h
 
-1433148065 source:c:\users\jachu\documents\github\hexoban\main.c
+1433168801 source:c:\users\jachu\documents\github\hexoban\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	<string.h>
 	<allegro5/allegro.h>
 	<allegro5/allegro_font.h>
+	"main.h"
 	"init.h"
 	"game.h"
 
-1433148961 source:c:\users\jachu\documents\github\hexoban\init.c
+1433169114 source:c:\users\jachu\documents\github\hexoban\init.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	<string.h>
 	<allegro5/allegro.h>
 	<allegro5/allegro_font.h>
+	"main.h"
 	"init.h"
 
 1372629528 c:\devel\allegro5\include\allegro5\platform\alplatf.h
@@ -250,17 +252,19 @@
 1372628331 c:\devel\allegro5\include\allegro5\allegro_font.h
 	"allegro5/allegro.h"
 
-1433149177 c:\users\jachu\documents\github\hexoban\init.h
+1433163017 c:\users\jachu\documents\github\hexoban\init.h
 
-1433147852 source:c:\users\jachu\documents\github\hexoban\game.c
+1433168879 source:c:\users\jachu\documents\github\hexoban\game.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	<string.h>
 	<allegro5/allegro.h>
 	<allegro5/allegro_font.h>
-	"init.h"
+	"main.h"
 	"game.h"
 
-1433147852 c:\users\jachu\documents\github\hexoban\game.h
+1433168742 c:\users\jachu\documents\github\hexoban\game.h
+
+1433161473 c:\users\jachu\documents\github\hexoban\main.h
 

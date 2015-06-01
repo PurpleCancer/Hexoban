@@ -4,6 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include "main.h"
 #include "init.h"
 
 
@@ -84,16 +85,21 @@ int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO
     return 0;
 }
 
-int font_init(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font)
+int font_init(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, char name[])
 {
-    *font = al_load_ttf_font("assets/fonts/arial.ttf", 20, 0);
+    char dir[100]="assets/fonts/";
+
+    strcat(dir, name);
+    strcat(dir, ".ttf");
+
+    *font = al_load_ttf_font(dir, 20, 0);
     if(!(*font)) {
         fprintf(stderr, "failed to load the font!\n");
         al_rest(1.0);
         return -1;
     }
 
-    *big_font = al_load_ttf_font("assets/fonts/arial.ttf", 50, 0);
+    *big_font = al_load_ttf_font(dir, 50, 0);
     if(!(*font)) {
         fprintf(stderr, "failed to load the font!\n");
         al_rest(1.0);
@@ -113,9 +119,10 @@ int font_deinit(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font)
 
 int bitmap_init(ALLEGRO_BITMAP **hex, char name[])
 {
-    char dir[100]="assests/gfx/";
+    char dir[100]="assets/gfx/";
 
-    strcat(dir,name);
+    strcat(dir, name);
+    strcat(dir, ".png");
 
     *hex = al_load_bitmap(dir);
     if(!(*hex)) {
@@ -130,6 +137,54 @@ int bitmap_init(ALLEGRO_BITMAP **hex, char name[])
 int bitmap_deinit(ALLEGRO_BITMAP **hex)
 {
     al_destroy_bitmap(*hex);
+
+    return 0;
+}
+
+int load_defaults(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex)
+{
+    FILE *ffont;
+    FILE *fgfx;
+    int i;
+    const int length=20;
+
+    char *fonts_names;
+    char *gfx_names;
+
+    char font_dir[35]="";
+    char gfx_dir[35]="";
+
+    int fonts_n, fonts_default;
+    int gfx_n, gfx_default;
+
+    ffont=fopen("assets/fonts/config.txt","r");
+    fgfx=fopen("assets/gfx/config.txt","r");
+
+    fscanf(ffont, "%d %d", &fonts_n, &fonts_default);
+    fonts_names=(char*) calloc(fonts_n, length*sizeof(char));
+    for(i=0; i<fonts_n; ++i)
+    {
+        fscanf(ffont, "%s", &fonts_names[length*i]);
+    }
+    fscanf(fgfx, "%d %d", &gfx_n, &gfx_default);
+    gfx_names=(char*) calloc(gfx_n, length*sizeof(char));
+    for(i=0; i<gfx_n; ++i)
+    {
+        fscanf(fgfx, "%s", &gfx_names[length*i]);
+    }
+
+    strcpy(font_dir,&fonts_names[length*fonts_default]);
+    strcpy(gfx_dir,&gfx_names[length*gfx_default]);
+
+    if(font_init(font, big_font, font_dir)==-1
+        || bitmap_init(hex, gfx_dir)==-1)return -1;
+
+
+    free(fonts_names);
+    free(gfx_names);
+
+    fclose(ffont);
+    fclose(fgfx);
 
     return 0;
 }
