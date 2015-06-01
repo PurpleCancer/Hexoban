@@ -114,6 +114,7 @@
 			<Add library="C:\MinGW\lib\libws2_32.a" />
 			<Add library="C:\MinGW\lib\libshlwapi.a" />
 		</Linker>
+		<Unit filename="decl.h" />
 		<Unit filename="game.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -125,7 +126,6 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

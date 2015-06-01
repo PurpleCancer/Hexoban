@@ -4,7 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include "main.h"
+#include "decl.h"
 #include "game.h"
 
 int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position)

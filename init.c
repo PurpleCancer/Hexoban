@@ -4,7 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include "main.h"
+#include "decl.h"
 #include "init.h"
 
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include "main.h"
+#include "decl.h"
 #include "init.h"
 #include "game.h"
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
                     }
                     else if(menu_position==3)doexit=true;
                 }
-                if(key[ESC] && al_get_time()-last_key_time>min_time)doexit=true;
+                if(key[ESC] && al_get_time()-last_key_time>3*min_time)doexit=true;
             }
             else if(in_editor)
             {
