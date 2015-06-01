@@ -47,8 +47,9 @@ int main(int argc, char **argv)
     struct hex board[BoardW][BoardH+1];
 
 
-    if(init(&display, &event_queue, &timer, &hex)==-1)return -1;
+    if(init(&display, &event_queue, &timer)==-1)return -1;
     if(font_init(&font, &big_font)==-1)return -1;
+    if(bitmap_init(&hex, "newhex.png")==-1)return -1;
 
     board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, PlayerPos);
 
@@ -397,8 +398,9 @@ int main(int argc, char **argv)
         }
     }
 
-    deinit(&display, &event_queue, &timer, &hex);
+    deinit(&display, &event_queue, &timer);
     font_deinit(&font, &big_font);
+    bitmap_deinit(&hex);
 
     return 0;
 }

@@ -7,7 +7,7 @@
 #include "init.h"
 
 
-int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex)
+int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer)
 {
     bool no_error;
 
@@ -59,16 +59,6 @@ int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_T
         return -1;
     }
 
-    *hex = al_load_bitmap("assets/gfx/newhex.png");
-    if(!(*hex)) {
-        fprintf(stderr, "failed to load hex bitmap!\n");
-        al_destroy_display(*display);
-        al_destroy_timer(*timer);
-        al_destroy_event_queue(*event_queue);
-        al_rest(1.0);
-        return -1;
-    }
-
     al_install_keyboard();
 
     al_register_event_source(*event_queue, al_get_display_event_source(*display));
@@ -85,12 +75,11 @@ int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_T
     return 0;
 }
 
-int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer, ALLEGRO_BITMAP **hex)
+int deinit(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_TIMER **timer)
 {
     al_destroy_timer(*timer);
     al_destroy_display(*display);
     al_destroy_event_queue(*event_queue);
-    al_destroy_bitmap(*hex);
 
     return 0;
 }
@@ -118,6 +107,29 @@ int font_deinit(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font)
 {
     al_destroy_font(*font);
     al_destroy_font(*big_font);
+
+    return 0;
+}
+
+int bitmap_init(ALLEGRO_BITMAP **hex, char name[])
+{
+    char dir[100]="assests/gfx/";
+
+    strcat(dir,name);
+
+    *hex = al_load_bitmap(dir);
+    if(!(*hex)) {
+        fprintf(stderr, "failed to load hex bitmap!\n");
+        al_rest(1.0);
+        return -1;
+    }
+
+    return 0;
+}
+
+int bitmap_deinit(ALLEGRO_BITMAP **hex)
+{
+    al_destroy_bitmap(*hex);
 
     return 0;
 }

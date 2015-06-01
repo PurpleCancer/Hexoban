@@ -113,6 +113,14 @@
 			<Add library="C:\MinGW\lib\libws2_32.a" />
 			<Add library="C:\MinGW\lib\libshlwapi.a" />
 		</Linker>
+		<Unit filename="game.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="game.h" />
+		<Unit filename="init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="init.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

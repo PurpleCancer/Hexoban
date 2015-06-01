@@ -62,7 +62,7 @@ int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char l
 int read_number_of_lvls(int *lvls_in_set, char name[])
 {
     FILE *fp;
-    char dir[50]="assets/lvls/";
+    char dir[100]="assets/lvls/";
 
     strcat(dir, name);
     strcat(dir, "/number.txt");
