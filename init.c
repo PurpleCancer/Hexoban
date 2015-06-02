@@ -141,7 +141,27 @@ int bitmap_deinit(ALLEGRO_BITMAP **hex)
     return 0;
 }
 
-int load_defaults(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex)
+int rose_init(ALLEGRO_BITMAP **rose)
+{
+    *rose = al_load_bitmap("assets/rose.png");
+    if(!(*rose))
+    {
+        fprintf(stderr, "failed to load rose bitmap!\n");
+        al_rest(1.0);
+        return -1;
+    }
+
+    return 0;
+}
+
+int rose_deinit(ALLEGRO_BITMAP **rose)
+{
+    al_destroy_bitmap(*rose);
+
+    return 0;
+}
+
+int load_defaults(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex, ALLEGRO_BITMAP **rose)
 {
     FILE *ffont;
     FILE *fgfx;
@@ -177,7 +197,7 @@ int load_defaults(ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP *
     strcpy(gfx_dir,&gfx_names[length*gfx_default]);
 
     if(font_init(font, big_font, font_dir)==-1
-        || bitmap_init(hex, gfx_dir)==-1)return -1;
+        || bitmap_init(hex, gfx_dir)==-1 || rose_init(rose)==-1)return -1;
 
 
     free(fonts_names);

@@ -8,7 +8,7 @@ int read_number_of_lvls(int *lvls_in_set, char name[]);
 int write_number_of_lvls(int *lvls_in_set, char name[]);
 int editor_function(char key, struct hex board[BoardW][BoardH+1], struct pos *CursorPos);
 int draw_lvl(struct hex board[BoardW][BoardH+1], ALLEGRO_BITMAP *hex, bool editor, struct pos CursorPos);
-int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crates, int targets, int crates_on_targets, int moves, int levels, int selected, bool valid, bool editor, bool lvl_won, struct pos PlayerPos);
+int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, ALLEGRO_BITMAP *rose, int crates, int targets, int crates_on_targets, int moves, int levels, int selected, bool valid, bool editor, bool lvl_won, struct pos PlayerPos);
 int board_reset(struct hex board[BoardW][BoardH+1], int *crates, int *targets, int *crates_on_targets, int *number_of_moves, bool *lvl_won, struct pos *PlayerPos);
 int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_number, int *crates, int *targets, int *crates_on_targets, int *moves, bool *valid, bool editor, bool *lvl_won, struct pos *PlayerPos);
 int board_unload(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_number);

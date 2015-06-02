@@ -14,6 +14,7 @@ int main(int argc, char **argv)
     ALLEGRO_EVENT_QUEUE *event_queue = NULL;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *hex = NULL;
+    ALLEGRO_BITMAP *rose = NULL;
     ALLEGRO_FONT *font = NULL;
     ALLEGRO_FONT *big_font = NULL;
     //game states
@@ -53,7 +54,7 @@ int main(int argc, char **argv)
 
 
     if(init(&display, &event_queue, &timer)==-1)return -1;
-    if(load_defaults(&font, &big_font, &hex)==-1)return -1;
+    if(load_defaults(&font, &big_font, &hex, &rose)==-1)return -1;
 
     board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, &PlayerPos);
 
@@ -403,7 +404,7 @@ int main(int argc, char **argv)
             else if(in_editor)
             {
                 draw_lvl(board, hex, true, CursorPos);
-                write_stuff(board, font, crates, targets, crates_on_targets, number_of_moves, number_of_lvls_in_set, number_of_current_lvl_selected+1, valid_lvl, true, lvl_won, PlayerPos);
+                write_stuff(board, font, rose, crates, targets, crates_on_targets, number_of_moves, number_of_lvls_in_set, number_of_current_lvl_selected+1, valid_lvl, true, lvl_won, PlayerPos);
             }
 
             else if(choosing_lvl)
@@ -415,7 +416,7 @@ int main(int argc, char **argv)
             else if(playing_lvl)
             {
                 draw_lvl(board, hex, false, CursorPos);
-                write_stuff(board, font, crates, targets, crates_on_targets, number_of_moves, number_of_lvls_in_set, number_of_current_lvl_selected+1, valid_lvl, false, lvl_won, PlayerPos);
+                write_stuff(board, font, rose, crates, targets, crates_on_targets, number_of_moves, number_of_lvls_in_set, number_of_current_lvl_selected+1, valid_lvl, false, lvl_won, PlayerPos);
             }
 
             else if(in_options)
@@ -433,6 +434,7 @@ int main(int argc, char **argv)
     deinit(&display, &event_queue, &timer);
     font_deinit(&font, &big_font);
     bitmap_deinit(&hex);
+    rose_deinit(&rose);
 
     return 0;
 }

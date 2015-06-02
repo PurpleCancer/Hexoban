@@ -395,37 +395,39 @@ int draw_lvl(struct hex board[BoardW][BoardH+1], ALLEGRO_BITMAP *hex, bool edito
     return 0;
 }
 
-int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, int crates, int targets, int crates_on_targets, int moves, int levels, int selected, bool valid, bool editor, bool lvl_won, struct pos PlayerPos)
+int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, ALLEGRO_BITMAP *rose, int crates, int targets, int crates_on_targets, int moves, int levels, int selected, bool valid, bool editor, bool lvl_won, struct pos PlayerPos)
 {
     al_draw_textf(font, al_map_rgb(0,0,0), 900, 100, 0, "Level %d of %d", selected, levels);
 
     if(editor)
     {
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 200, 0, "Use Q, W, E, A, S, D to move the cursor.");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 230, 0, "Page Down and Page Up to move");
-        al_draw_text(font, al_map_rgb(0,0,0), 1000, 260, 0, "between levels.");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 290, 0, "- : puts a wall");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 320, 0, "O : puts an empty floor tile");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 350, 0, "P : puts the player");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 380, 0, "C : puts a crate");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 410, 0, "X : puts an empty target tile");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 440, 0, "T : puts a target tile with a crate on it");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 470, 0, "R : resets the level");
+        al_draw_bitmap(rose, 900, 130, 0);
+        //al_draw_text(font, al_map_rgb(0,0,0), 900, 200, 0, "Use Q, W, E, A, S, D to move the cursor.");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 340, 0, "Page Down and Page Up to move");
+        al_draw_text(font, al_map_rgb(0,0,0), 1000, 370, 0, "between levels.");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 400, 0, "- : puts a wall");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 430, 0, "O : puts an empty floor tile");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 460, 0, "P : puts the player");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 490, 0, "C : puts a crate");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 520, 0, "X : puts an empty target tile");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 550, 0, "T : puts a target tile with a crate on it");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 580, 0, "R : resets the level");
     }
     else
     {
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 200, 0, "Use Q, W, E, A, S, D to move the player.");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 230, 0, "Page Down and Page Up to move");
-        al_draw_text(font, al_map_rgb(0,0,0), 1000, 260, 0, "between levels.");
-        al_draw_text(font, al_map_rgb(0,0,0), 900, 290, 0, "Press R to reset the level");
+        al_draw_bitmap(rose, 900, 130, 0);
+        //al_draw_text(font, al_map_rgb(0,0,0), 900, 200, 0, "Use Q, W, E, A, S, D to move the player.");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 340, 0, "Page Down and Page Up to move");
+        al_draw_text(font, al_map_rgb(0,0,0), 1000, 370, 0, "between levels.");
+        al_draw_text(font, al_map_rgb(0,0,0), 900, 400, 0, "Press R to reset the level");
     }
     if(!editor && valid)
     {
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 400, 0, "Player X: %d", PlayerPos.x);
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 430, 0, "Player Y: %d", PlayerPos.y);
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 460, 0, "Crates: %d of %d", crates_on_targets, targets);;
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 490, 0, "Moves: %d", moves);
-        if(lvl_won)al_draw_text(font, al_map_rgb(0,0,0), 900, 550, 0, "YOU WON!!!!11");
+        al_draw_textf(font, al_map_rgb(0,0,0), 900, 500, 0, "Player X: %d", PlayerPos.x);
+        al_draw_textf(font, al_map_rgb(0,0,0), 900, 530, 0, "Player Y: %d", PlayerPos.y);
+        al_draw_textf(font, al_map_rgb(0,0,0), 900, 560, 0, "Crates: %d of %d", crates_on_targets, targets);;
+        al_draw_textf(font, al_map_rgb(0,0,0), 900, 590, 0, "Moves: %d", moves);
+        if(lvl_won)al_draw_text(font, al_map_rgb(0,0,0), 900, 650, 0, "YOU WON!!!!11");
     }
     else if(!editor && !valid) al_draw_text(font, al_map_rgb(0,0,0), 900, 150, 0, "Error reading the level!");
 
