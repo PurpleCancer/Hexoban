@@ -4,6 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
 #include "decl.h"
 #include "game.h"
 
@@ -21,8 +22,11 @@ int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position)
     if(position==2)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Options");
     else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 300, ALLEGRO_ALIGN_CENTRE, "Options");
 
-    if(position==3)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Exit");
-    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Exit");
+    if(position==3)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Credits");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 350, ALLEGRO_ALIGN_CENTRE, "Credits");
+
+    if(position==4)al_draw_text(font, al_map_rgb(0,0,0), ScreenW/2, 400, ALLEGRO_ALIGN_CENTRE, "Exit");
+    else al_draw_text(font, al_map_rgb(150,150,150), ScreenW/2, 400, ALLEGRO_ALIGN_CENTRE, "Exit");
 }
 
 int options_function(int moveh, ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex, int position)
@@ -157,6 +161,24 @@ int options_function(int moveh, ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, AL
 
     fclose(ffont);
     fclose(fgfx);
+
+    return 0;
+}
+
+int draw_credits(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font)
+{
+    al_draw_text(big_font, al_map_rgb(0,0,0), 200, 80, 0, "HEXOBAN:");
+    al_draw_text(font, al_map_rgb(0,0,0), 280, 150, 0, "A game by me, Jan Bajer");
+
+    al_draw_text(font, al_map_rgb(0,0,0), 280, 200, 0, "Original game Sokoban created by");
+    al_draw_text(font, al_map_rgb(0,0,0), 360, 230, 0, "Hiroyuki Imabayashi, 1980");
+
+    al_draw_text(font, al_map_rgb(0,0,0), 280, 280, 0, "Special thanks to Christopher");
+    al_draw_text(font, al_map_rgb(0,0,0), 360, 310, 0, "for his fearsome pirate");
+
+
+    al_draw_text(font, al_map_rgb(0,0,0), ScreenW-10, ScreenH-50, ALLEGRO_ALIGN_RIGHT, "Jan Bajer, 2015");
+
 
     return 0;
 }
@@ -367,6 +389,8 @@ int editor_function(char key, struct hex board[BoardW][BoardH+1], struct pos *Cu
 int draw_lvl(struct hex board[BoardW][BoardH+1], ALLEGRO_BITMAP *hex, bool editor, struct pos CursorPos)
 //draws the board on the display
 {
+    al_draw_filled_rectangle(OriginX, OriginY-HexH/2, OriginX+14*45+HexW, OriginY+10*HexH+HexH/2, al_map_rgb(170,170,170));
+
     int i,j;
     int X,Y,YY;
     for(i=0,Y=OriginY;i<=BoardH;++i,Y+=52)

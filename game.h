@@ -3,6 +3,7 @@
 
 int draw_menu(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font, int position);
 int options_function(int moveh, ALLEGRO_FONT **font, ALLEGRO_FONT **big_font, ALLEGRO_BITMAP **hex, int position);
+int draw_credits(ALLEGRO_FONT *font, ALLEGRO_FONT *big_font);
 int lvl_select(ALLEGRO_FONT *font, int selected, int *number_of_lvl_sets, char lvl_selected[20]);
 int read_number_of_lvls(int *lvls_in_set, char name[]);
 int write_number_of_lvls(int *lvls_in_set, char name[]);

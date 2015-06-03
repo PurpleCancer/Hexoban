@@ -4,6 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
 #include "decl.h"
 #include "init.h"
 #include "game.h"
@@ -18,7 +19,7 @@ int main(int argc, char **argv)
     ALLEGRO_FONT *font = NULL;
     ALLEGRO_FONT *big_font = NULL;
     //game states
-    bool in_menu=true, in_editor=false, choosing_lvl=false, playing_lvl=false, in_options=false;
+    bool in_menu=true, in_editor=false, choosing_lvl=false, playing_lvl=false, in_options=false, in_credits=false;
     bool valid_lvl=true;
     bool redraw = true;
     bool doexit = false;
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
 
     //handling the menu
     int menu_position=0;
-    const int number_of_menu_positions=4;
+    const int number_of_menu_positions=5;
     int options_position=0;
     const int number_of_options_positions=2;
 
@@ -89,7 +90,12 @@ int main(int argc, char **argv)
                         in_menu=false;
                         in_options=true;
                     }
-                    else if(menu_position==3)doexit=true;
+                    else if(menu_position==3)
+                    {
+                        in_menu=false;
+                        in_credits=true;
+                    }
+                    else if(menu_position==4)doexit=true;
                 }
                 if(key[ESC] && al_get_time()-last_key_time>3*min_time)doexit=true;
             }
@@ -199,6 +205,15 @@ int main(int argc, char **argv)
                 {
                     last_key_time=al_get_time();
                     in_options=false;
+                    in_menu=true;
+                }
+            }
+            else if(in_credits)
+            {
+                if(key[ESC] && al_get_time()-last_key_time>min_time)
+                {
+                    last_key_time=al_get_time();
+                    in_credits=false;
                     in_menu=true;
                 }
             }
@@ -422,6 +437,11 @@ int main(int argc, char **argv)
             else if(in_options)
             {
                 options_function(move_horizontal, &font, &big_font, &hex, options_position);
+            }
+
+            else if(in_credits)
+            {
+                draw_credits(font, big_font);
             }
 
             //fprintf(stderr, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", key[0], key[1], key[2], key[3], key[4], key[5], key[6], key[7], key[8], key[9], key[10], key[11], key[12], key[13], key[14]);           //EPIC MATRIX

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
 #include "decl.h"
 #include "init.h"
 
@@ -16,6 +17,14 @@ int init(ALLEGRO_DISPLAY **display, ALLEGRO_EVENT_QUEUE **event_queue, ALLEGRO_T
     if(!no_error)
     {
         fprintf(stderr, "failed to initialize allegro!\n");
+        al_rest(1.0);
+        return -1;
+    }
+
+    no_error=al_init_primitives_addon();
+    if(!no_error)
+    {
+        fprintf(stderr, "failed to initialize primitives addon!\n");
         al_rest(1.0);
         return -1;
     }
