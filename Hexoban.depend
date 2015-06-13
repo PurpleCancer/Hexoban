@@ -226,7 +226,7 @@
 
 1372628331 c:\devel\allegro5\include\allegro5\alcompat.h
 
-1434228753 source:c:\users\jachu\documents\github\hexoban\main.c
+1434230855 source:c:\users\jachu\documents\github\hexoban\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -256,7 +256,7 @@
 
 1433276949 c:\users\jachu\documents\github\hexoban\init.h
 
-1433320673 source:c:\users\jachu\documents\github\hexoban\game.c
+1434230400 source:c:\users\jachu\documents\github\hexoban\game.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>

@@ -173,7 +173,8 @@ int main(int argc, char **argv)
                 if(key[D] && al_get_time()-last_key_time>min_time && !lvl_won)if(move('d', board, &crates_on_targets, &number_of_moves, targets, &lvl_won, &PlayerPos)==1)last_key_time=al_get_time();
 
                 if(key[R] && al_get_time()-last_key_time>min_time){board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, &PlayerPos);
-                                                    board_load(board, current_lvl_set_selected_name, number_of_current_lvl_selected, &crates, &targets, &crates_on_targets, &number_of_moves, &valid_lvl, false, &lvl_won, &PlayerPos);}
+                                                    board_load(board, current_lvl_set_selected_name, number_of_current_lvl_selected, &crates, &targets, &crates_on_targets, &number_of_moves, &valid_lvl, false, &lvl_won, &PlayerPos);
+                                                    last_key_time=al_get_time();}
 
                 if(key[PGUP] && al_get_time()-last_key_time>min_time && number_of_current_lvl_selected>0){number_of_current_lvl_selected--;last_key_time=al_get_time();
                                                     board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, &PlayerPos);

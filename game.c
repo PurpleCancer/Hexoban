@@ -600,6 +600,7 @@ int board_load(struct hex board[BoardW][BoardH+1], char lvl_name[], int lvl_numb
             }
         }
     }
+    if(*crates_on_targets>=*targets && !editor)*lvl_won=true;
     if(*crates!=*targets)
     {
         if(!editor)fprintf(stderr, "wrong crates/targets ratio!\n");
@@ -721,7 +722,7 @@ int move(char key, struct hex board[BoardW][BoardH+1], int *crates_on_targets, i
             EndPos.x=PlayerPos->x+1;
             EndPos.y=PlayerPos->y+1;
         }
-    }
+    }if(*crates_on_targets>=targets)*lvl_won=true;
 
     if(EndPos.x>-1 && EndPos.y>-1 && EndPos.x<BoardW && ((EndPos.x%2==0 && EndPos.y<BoardH) || (EndPos.x%2==1 && EndPos.y<=BoardH)) &&
         board[EndPos.x][EndPos.y].tl && !board[EndPos.x][EndPos.y].CRATE)
