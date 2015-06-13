@@ -447,11 +447,11 @@ int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, ALLEGRO_
     }
     if(!editor && valid)
     {
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 500, 0, "Player X: %d", PlayerPos.x);
-        al_draw_textf(font, al_map_rgb(0,0,0), 900, 530, 0, "Player Y: %d", PlayerPos.y);
+        //al_draw_textf(font, al_map_rgb(0,0,0), 900, 500, 0, "Player X: %d", PlayerPos.x);
+        //al_draw_textf(font, al_map_rgb(0,0,0), 900, 530, 0, "Player Y: %d", PlayerPos.y);
         al_draw_textf(font, al_map_rgb(0,0,0), 900, 560, 0, "Crates: %d of %d", crates_on_targets, targets);;
         al_draw_textf(font, al_map_rgb(0,0,0), 900, 590, 0, "Moves: %d", moves);
-        if(lvl_won)al_draw_text(font, al_map_rgb(0,0,0), 900, 650, 0, "YOU WON!!!!11");
+        if(lvl_won)al_draw_text(font, al_map_rgb(0,0,0), 900, 650, 0, "YOU WON!");
     }
     else if(!editor && !valid) al_draw_text(font, al_map_rgb(0,0,0), 900, 150, 0, "Error reading the level!");
 
