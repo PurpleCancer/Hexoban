@@ -87,6 +87,7 @@ int main(int argc, char **argv)
                     else if(menu_position==2)
                     {
                         options_position=0;
+                        move_horizontal=0;
                         in_menu=false;
                         in_options=true;
                     }
