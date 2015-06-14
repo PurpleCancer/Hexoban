@@ -230,6 +230,8 @@ int read_number_of_lvls(int *lvls_in_set, char name[])
 
     fp=fopen(dir, "r");
 
+    if(fp==NULL){printf(stderr, "No configuration file!\n");return -1;}
+
     fscanf(fp, "%d", lvls_in_set);
 
     fclose(fp);
@@ -453,7 +455,7 @@ int write_stuff(struct hex board[BoardW][BoardH+1], ALLEGRO_FONT *font, ALLEGRO_
         al_draw_textf(font, al_map_rgb(0,0,0), 900, 590, 0, "Moves: %d", moves);
         if(lvl_won)al_draw_text(font, al_map_rgb(0,0,0), 900, 650, 0, "YOU WON!");
     }
-    else if(!editor && !valid) al_draw_text(font, al_map_rgb(0,0,0), 900, 150, 0, "Error reading the level!");
+    else if(!editor && !valid) al_draw_text(font, al_map_rgb(0,0,0), 900, 450, 0, "Error reading the level!");
 
     return 0;
 }

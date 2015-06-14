@@ -114,7 +114,7 @@ int main(int argc, char **argv)
                 if(key[C])editor_function('c', board, &CursorPos);
                 if(key[T])editor_function('t', board, &CursorPos);
 
-                if(key[R]){board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, &PlayerPos);last_key_time=al_get_time();}
+                if(key[R] && al_get_time()-last_key_time>min_time){board_reset(board, &crates, &targets, &crates_on_targets, &number_of_moves, &lvl_won, &PlayerPos);last_key_time=al_get_time();}
 
                 if(key[PGUP] && al_get_time()-last_key_time>min_time && number_of_current_lvl_selected>0){board_unload(board, "custom", number_of_current_lvl_selected);
                                                     number_of_current_lvl_selected--;last_key_time=al_get_time();
