@@ -1,0 +1,4 @@
+A rendition on the game Sokoban, created as a student project with C and Allegro graphics library with Code::Blocks as and IDE and building engine.
+I'm hopeful information in the game should be enough for it to be playable (at least if you're familiar with the rules of the original) and for the editor to be usable.
+Should you want to play the game on Windows and not worry about building it, just copy the executable from bin/Release to the main folder and run it.
+If you find this readme non-exhaustive (which isn't surprising), do not hestitate to contact me.
